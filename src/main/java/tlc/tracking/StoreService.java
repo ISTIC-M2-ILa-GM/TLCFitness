@@ -2,11 +2,13 @@ package tlc.tracking;
 
 import java.util.List;
 
-public interface StoreService<T> {
+public interface StoreService {
 
-    T insert(T o);
+    Record insert(Record o);
 
-    List<T> findBetweenRect(int a, int b, int x, int y);
+    List<Record> findBetweenRect(int a, int b, int x, int y);
 
-    void delete(T o);
+    void delete(long id);
+    
+    List<Record> findByRunId(long id);
 }
