@@ -21,3 +21,6 @@ And go to http://127.0.0.1:8080
 mvn appengine::update
 ```
 
+## Access to the deployed app
+
+https://your-id.appspot.com/
