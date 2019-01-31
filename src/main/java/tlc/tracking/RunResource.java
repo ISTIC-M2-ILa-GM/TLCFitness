@@ -26,8 +26,8 @@ public class RunResource extends ServerResource {
 
         // Build a dummy result
         RecordList res = new RecordList();
-        res.add(new Record(5, 43.8, 12.6, "lea", 154789));
-        res.add(new Record(5, 43.8, 12.6, "john", 154789));
+//        res.add(new Record(5, 43.8, 12.6, "lea", 154789));
+//        res.add(new Record(5, 43.8, 12.6, "john", 154789));
 
         //@FIXME You must query Google Datastore to retrieve the records instead of sending dummy results
         //@FIXME Don't forget to apply potential filters got from the URL parameters
