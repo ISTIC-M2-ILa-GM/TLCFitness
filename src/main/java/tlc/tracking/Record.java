@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class Record {
 
     private Long id;
+    private Long runId;
     private double lat;
     private double lon;
     private String user;
