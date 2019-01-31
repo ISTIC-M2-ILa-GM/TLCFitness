@@ -1,16 +1,16 @@
 package tlc.tracking;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
 import org.restlet.resource.ServerResource;
-
 import tlc.tracking.impl.GoogleDataStoreService;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Objects;
 
 public class RunResource extends ServerResource {
 
@@ -47,14 +47,19 @@ public class RunResource extends ServerResource {
     public void bulkDelete() {
         final String[] run_ids = getRequest().getAttributes().get("list").toString().split(",");
 
-        Arrays.stream(run_ids).map(it -> {
-            try {
-                return Long.valueOf(it);
-            } catch (Exception e) {
-                // TODO Si un id n'est pas bon on fais quoi ?
-                return null;
-            }
-        }).filter(it -> it != null).map(this.service::findByRunId).flatMap(Collection::stream).map(Record::getId)
+        Arrays.stream(run_ids)
+                .map(it -> {
+                    try {
+                        return Long.valueOf(it);
+                    } catch (Exception e) {
+                        // TODO Si un id n'est pas bon on fais quoi ?
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .map(this.service::findByRunId)
+                .flatMap(Collection::stream)
+                .map(Record::getId)
                 .forEach(this.service::delete);
 
     }

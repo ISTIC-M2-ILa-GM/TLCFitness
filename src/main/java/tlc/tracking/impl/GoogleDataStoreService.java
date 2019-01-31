@@ -1,18 +1,13 @@
 package tlc.tracking.impl;
 
-import static tlc.tracking.RecordMapper.toEntity;
-
-import java.util.List;
-
-import com.google.cloud.datastore.Datastore;
-import com.google.cloud.datastore.DatastoreOptions;
-import com.google.cloud.datastore.Entity;
-import com.google.cloud.datastore.Key;
-import com.google.cloud.datastore.KeyFactory;
-
+import com.google.cloud.datastore.*;
 import tlc.tracking.Record;
 import tlc.tracking.RecordList;
 import tlc.tracking.StoreService;
+
+import java.util.List;
+
+import static tlc.tracking.RecordMapper.toEntity;
 
 public class GoogleDataStoreService implements StoreService {
 
@@ -37,7 +32,10 @@ public class GoogleDataStoreService implements StoreService {
 
     @Override
     public void delete(long id) {
-
+        // Recréer la clé
+        final Key key = RECORDS_KEY.newKey(id);
+        // Supprime l'enregistrement
+        DATA_STORE.delete(key);
     }
 
     @Override
