@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Record {
 
-    private int id;
+    private Long id;
     private double lat;
     private double lon;
     private String user;
