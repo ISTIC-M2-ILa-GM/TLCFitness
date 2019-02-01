@@ -3,8 +3,10 @@ package tlc.tracking.impl;
 import com.google.cloud.datastore.*;
 import tlc.tracking.Record;
 import tlc.tracking.RecordList;
+import tlc.tracking.RecordMapper;
 import tlc.tracking.StoreService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static tlc.tracking.RecordMapper.toEntity;
@@ -33,14 +35,32 @@ public class GoogleDataStoreService implements StoreService {
     @Override
     public void delete(long id) {
         // Recréer la clé
-        final Key key = RECORDS_KEY.newKey(id);
+        final Key key = longToKey(id);
         // Supprime l'enregistrement
         DATA_STORE.delete(key);
     }
 
     @Override
-    public List<Record> findByRunId(long id) {
-        return null;
+    public List<Record> findByRunId(final long runId) {
+        final EntityQuery query = Query.newEntityQueryBuilder()
+                .setKind("Record")
+                .setFilter(StructuredQuery.PropertyFilter.eq("runId", runId))
+                .build();
+
+        final QueryResults<Entity> results = DATA_STORE.run(query);
+        final List<Record> records = new ArrayList<>();
+        while (results.hasNext()){
+            records.add(
+                    RecordMapper.toRecord(results.next())
+            );
+        }
+
+
+        return records;
+    }
+
+    private Key longToKey(long id) {
+        return RECORDS_KEY.newKey(id);
     }
 
 }
