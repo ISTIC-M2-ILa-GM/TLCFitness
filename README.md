@@ -1,4 +1,4 @@
-# [Projet TLC Fitness](td-datastore.pdf)
+# [Projet TLC Fitness](tlc-tp1.pdf)
 
 This is a working skeleton. However, it only returns dummy values and you must replace them by interacting with Google Datastore.
 The only java file you need to update is `src/main/java/tlc/tracking/RunResource.java`. You will find `@FIXME` comments where you should add code.
