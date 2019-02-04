@@ -10,7 +10,6 @@ import tlc.tracking.impl.GoogleDataStoreService;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
 
 public class RunResource extends ServerResource {
 
@@ -46,16 +45,8 @@ public class RunResource extends ServerResource {
         final String[] run_ids = getRequest().getAttributes().get("list").toString().split(",");
 
         Arrays.stream(run_ids)
-                .map(it -> {
-                    try {
-                        return Long.valueOf(it);
-                    } catch (Exception e) {
-                        // TODO Si un id n'est pas bon on fais quoi ?
-                        return null;
-                    }
-                })
-                .filter(Objects::nonNull)
-                .map(this.service::findByRunId)
+                .map(Long::valueOf)
+                .map(this.service::findById)
                 .flatMap(Collection::stream)
                 .map(Record::getId)
                 .forEach(this.service::delete);
