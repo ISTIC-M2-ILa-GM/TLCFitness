@@ -19,8 +19,8 @@ public interface StoreService {
     /**
      * Récupère un {@link Stream} de {@link Record}
      *
-     * @param runId, l'identifiant du run
+     * @param id, l'identifiant du run
      * @return un {@link Stream} de Record jamais null
      */
-    List<Record> findByRunId(long runId);
+    List<Record> findById(long id);
 }

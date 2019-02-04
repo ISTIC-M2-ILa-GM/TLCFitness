@@ -40,10 +40,10 @@ public class GoogleDataStoreService implements StoreService {
     }
 
     @Override
-    public List<Record> findByRunId(final long runId) {
+    public List<Record> findById(final long id) {
         final EntityQuery query = Query.newEntityQueryBuilder()
                 .setKind("Record")
-                .setFilter(StructuredQuery.PropertyFilter.eq("runId", runId))
+                .setFilter(StructuredQuery.PropertyFilter.eq("id", id))
                 .build();
 
         final QueryResults<Entity> results = DATA_STORE.run(query);
