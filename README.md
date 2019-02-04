@@ -72,3 +72,8 @@ mvn appengine::update
 ## Access to the deployed app
 
 https://your-id.appspot.com/
+
+## Benchmark
+Outils proposés : https://github.com/denji/awesome-http-benchmark
+
+Outils choisi : [JMeter](http://jmeter.apache.org)
