@@ -7,7 +7,7 @@ public interface StoreService {
 
     RecordList insert(RecordList o);
 
-    List<Record> findBetweenRect(int a, int b, int x, int y);
+    List<Record> find(String user, Long lon, Long lat, Long timestampMin, Long timestampMax);
 
     /**
      * Supprime un {@link Record} en fonction de son id

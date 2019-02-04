@@ -27,7 +27,7 @@ public class GoogleDataStoreService implements StoreService {
     }
 
     @Override
-    public List<Record> findBetweenRect(int a, int b, int x, int y) {
+    public List<Record> find(String user, Long lon, Long lat, Long timestampMin, Long timestampMax) {
         return null;
     }
 
