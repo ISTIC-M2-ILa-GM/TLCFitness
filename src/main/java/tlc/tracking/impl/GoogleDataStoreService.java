@@ -22,7 +22,6 @@ public class GoogleDataStoreService implements StoreService {
             Key recKey = DATA_STORE.allocateId(RECORDS_KEY.newKey());
             Entity entity = toEntity(recKey, r);
             DATA_STORE.add(entity);
-            r.setId(entity.getKey().getId());
         });
         return recordList;
     }
