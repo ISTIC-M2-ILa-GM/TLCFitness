@@ -9,11 +9,11 @@ public class RecordMapper {
 
     public static Entity toEntity(Key key, Record r) {
         return Entity.newBuilder(key)
+                .set("id", r.getId())
                 .set("user", r.getUser())
                 .set("lat", r.getLat())
                 .set("lon", r.getLon())
                 .set("timestamp", r.getTimestamp())
-                .set("runId", r.getRunId())
                 .build();
     }
 
@@ -32,7 +32,6 @@ public class RecordMapper {
                 .lat(e.getDouble("lat"))
                 .lon(e.getDouble("lon"))
                 .timestamp(e.getLong("timestamp"))
-                .runId(e.getLong("runId"))
                 .build();
     }
 }
