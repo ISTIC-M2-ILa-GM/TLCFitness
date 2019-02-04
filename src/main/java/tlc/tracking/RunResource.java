@@ -18,9 +18,7 @@ public class RunResource extends ServerResource {
 
     @Post("json")
     public void bulkAdd(RecordList toAdd) {
-        for (Record r : toAdd)
-            System.out.println(r);
-        //@FIXME You must add these Records in Google Datastore
+        service.insert(toAdd);
     }
 
     @Get("json")
