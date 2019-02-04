@@ -17,6 +17,13 @@ mvn appengine:devserver
 
 And go to http://127.0.0.1:8080
 
+### Test Script
+
+```
+./test.sh http://localhost:8080/api/run lon true
+```
+lon : pour spécifier le nom de la variable de longitude
+true : pour bloquer les requètes après l'ajout
 
 
 ### Avec son IDE et Tomcat
