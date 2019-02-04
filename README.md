@@ -41,7 +41,7 @@ Par exemple sur intellij Ultimate :
 * tomcat server local
 * name -> TLCFitness
 * Configure
-* tomcat home -> /home/<username>/opt/tomcat
+* tomcat home -> /home/<username\>/opt/tomcat
 * tomcat base directory -> idem 
 * valider
 * Deployment
