@@ -22,6 +22,15 @@ public class RunResource extends ServerResource {
 
     @Get("json")
     public RecordList search() {
+        String id = (String)this.getRequestAttributes().get("id");
+        String userName = (String)this.getRequestAttributes().get("user");
+        String location = (String)this.getRequestAttributes().get("loc");
+        String timestamp = (String)this.getRequestAttributes().get("timestamp");
+
+
+
+
+
         // Read and print URL parameters
         Form form = getRequest().getResourceRef().getQueryAsForm();
         for (Parameter parameter : form) {

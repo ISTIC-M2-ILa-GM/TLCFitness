@@ -1,6 +1,21 @@
 package tlc.tracking.impl;
 
-import com.google.cloud.datastore.*;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.cloud.datastore.Datastore;
+import com.google.cloud.datastore.DatastoreOptions;
+import com.google.cloud.datastore.Entity;
+import com.google.cloud.datastore.EntityQuery;
+import com.google.cloud.datastore.Key;
+import com.google.cloud.datastore.KeyFactory;
+import com.google.cloud.datastore.QueryResults;
+import com.google.cloud.datastore.StructuredQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
 import tlc.tracking.Record;
 import tlc.tracking.RecordList;
 import tlc.tracking.RecordMapper;
@@ -9,12 +24,14 @@ import tlc.tracking.StoreService;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.cloud.datastore.Query.newEntityQueryBuilder;
 import static tlc.tracking.RecordMapper.toEntity;
 
 public class GoogleDataStoreService implements StoreService {
 
-    private Datastore DATA_STORE = DatastoreOptions.getDefaultInstance().getService();
-    private KeyFactory RECORDS_KEY = DATA_STORE.newKeyFactory().setKind("content");
+    private static final Datastore DATA_STORE = DatastoreOptions.getDefaultInstance().getService();
+    private static final DatastoreService DATASTORE_SERVICE = DatastoreServiceFactory.getDatastoreService();
+    private static final KeyFactory RECORDS_KEY = DATA_STORE.newKeyFactory().setKind("content");
 
     @Override
     public RecordList insert(RecordList recordList) {
@@ -28,7 +45,37 @@ public class GoogleDataStoreService implements StoreService {
 
     @Override
     public List<Record> find(String user, Long lon, Long lat, Long timestampMin, Long timestampMax) {
-        return null;
+        List<Record> records = new ArrayList<>();
+        List<Filter> filters = new ArrayList<>();
+
+
+        if (user != null) {
+            Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, user);
+            filters.add(userFilter);
+        }
+        if (lon != null) {
+            Filter lonFilter = new FilterPredicate("lon", FilterOperator.EQUAL, lon);
+            filters.add(lonFilter);
+        }
+        if (lat != null) {
+            Filter latFilter = new FilterPredicate("lat", FilterOperator.EQUAL, lat);
+            filters.add(latFilter);
+        }
+        if (timestampMin != null && timestampMax != null) {
+            Filter minTimeFilter = new FilterPredicate("timestamp", FilterOperator.GREATER_THAN, timestampMin);
+            Filter maxTimeFilter = new FilterPredicate("timestamp", FilterOperator.LESS_THAN, timestampMax);
+            filters.add(minTimeFilter);
+            filters.add(maxTimeFilter);
+        }
+
+        CompositeFilter mainFilter = new CompositeFilter(Query.CompositeFilterOperator.AND, filters);
+
+        Query query = new Query("Record").setFilter(mainFilter);
+        List<com.google.appengine.api.datastore.Entity> results = DATASTORE_SERVICE.prepare(query).asList(FetchOptions.Builder.withDefaults());
+
+
+
+        return results;
     }
 
     @Override
@@ -41,7 +88,7 @@ public class GoogleDataStoreService implements StoreService {
 
     @Override
     public List<Record> findById(final long id) {
-        final EntityQuery query = Query.newEntityQueryBuilder()
+        final EntityQuery query = newEntityQueryBuilder()
                 .setKind("Record")
                 .setFilter(StructuredQuery.PropertyFilter.eq("id", id))
                 .build();
