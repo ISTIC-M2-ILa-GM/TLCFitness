@@ -7,7 +7,7 @@ public interface StoreService {
 
     RecordList insert(RecordList o);
 
-    List<Record> find(String user, Long lon, Long lat, Long timestampMin, Long timestampMax);
+    List<Record> find(String user, Long id, Long lon, Long lat, Long timestampMin, Long timestampMax);
 
     /**
      * Supprime un {@link Record} en fonction de son id

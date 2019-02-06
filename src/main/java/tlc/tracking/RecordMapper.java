@@ -34,4 +34,20 @@ public class RecordMapper {
                 .timestamp(e.getLong("timestamp"))
                 .build();
     }
+
+    /**
+     * Convert an appengine Entity to a Record
+     * @param entity appengine Entity
+     * @return the generated Record or null if the Entity is null
+     */
+    public static Record entityToRecord(com.google.appengine.api.datastore.Entity entity) {
+
+        return entity == null ? null : Record.builder()
+                .id((Long) entity.getProperty("id"))
+                .user((String) entity.getProperty("user"))
+                .lat((Double) entity.getProperty("lat"))
+                .lon((Double) entity.getProperty("lon"))
+                .timestamp((Long) entity.getProperty("timestamp"))
+                .build();
+    }
 }

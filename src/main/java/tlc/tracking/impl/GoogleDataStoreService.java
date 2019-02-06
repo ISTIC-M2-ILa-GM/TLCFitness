@@ -3,6 +3,11 @@ package tlc.tracking.impl;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.Filter;
+import com.google.appengine.api.datastore.Query.FilterPredicate;
+import com.google.appengine.api.datastore.Query.FilterOperator;
+import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
@@ -11,11 +16,6 @@ import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyFactory;
 import com.google.cloud.datastore.QueryResults;
 import com.google.cloud.datastore.StructuredQuery;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.CompositeFilter;
 import tlc.tracking.Record;
 import tlc.tracking.RecordList;
 import tlc.tracking.RecordMapper;
@@ -44,14 +44,17 @@ public class GoogleDataStoreService implements StoreService {
     }
 
     @Override
-    public List<Record> find(String user, Long lon, Long lat, Long timestampMin, Long timestampMax) {
-        List<Record> records = new ArrayList<>();
+    public List<Record> find(String user, Long id, Long lon, Long lat, Long timestampMin, Long timestampMax) {
         List<Filter> filters = new ArrayList<>();
-
+        List<Record> records = new ArrayList<>();
 
         if (user != null) {
             Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, user);
             filters.add(userFilter);
+        }
+        if (id != null) {
+            Filter idFilter = new FilterPredicate("id", FilterOperator.EQUAL, id);
+            filters.add(idFilter);
         }
         if (lon != null) {
             Filter lonFilter = new FilterPredicate("lon", FilterOperator.EQUAL, lon);
@@ -68,14 +71,22 @@ public class GoogleDataStoreService implements StoreService {
             filters.add(maxTimeFilter);
         }
 
-        CompositeFilter mainFilter = new CompositeFilter(Query.CompositeFilterOperator.AND, filters);
+        Filter mainFilter = null;
+        if (filters.size() > 1) {
+            mainFilter = new CompositeFilter(Query.CompositeFilterOperator.AND, filters);
+        }
+        else if (filters.size() == 1){
+            mainFilter = filters.get(0);
+        }
 
         Query query = new Query("Record").setFilter(mainFilter);
         List<com.google.appengine.api.datastore.Entity> results = DATASTORE_SERVICE.prepare(query).asList(FetchOptions.Builder.withDefaults());
 
+        for (com.google.appengine.api.datastore.Entity res : results) {
+            records.add(RecordMapper.entityToRecord(res));
+        }
 
-
-        return results;
+        return records;
     }
 
     @Override
