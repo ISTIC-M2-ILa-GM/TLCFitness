@@ -7,7 +7,7 @@
     <artifactId>tracking</artifactId>
 
     <prerequisites>
-        <maven>3.1.0</maven>
+        <maven>3.5.0</maven>
     </prerequisites>
 
 
@@ -102,6 +102,14 @@
             <artifactId>org.restlet.ext.json</artifactId>
             <version>3.0-M1</version>
         </dependency>
+
+        <!-- gatling-->
+        <dependency>
+            <groupId>io.gatling</groupId>
+            <artifactId>gatling-http</artifactId>
+            <version>3.0.3</version>
+        </dependency>
+
     </dependencies>
 
     <properties>
@@ -118,6 +126,14 @@
     <build>
         <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes</outputDirectory>
         <plugins>
+
+            <!-- plugin -->
+            <plugin>
+                <groupId>io.gatling</groupId>
+                <artifactId>gatling-maven-plugin</artifactId>
+                <version>3.0.1</version>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
@@ -132,15 +148,15 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <version>3.2</version>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
+            <!--<plugin>-->
+            <!--<groupId>org.apache.maven.plugins</groupId>-->
+            <!--<version>3.2</version>-->
+            <!--<artifactId>maven-compiler-plugin</artifactId>-->
+            <!--<configuration>-->
+            <!--<source>1.8</source>-->
+            <!--<target>1.8</target>-->
+            <!--</configuration>-->
+            <!--</plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -172,6 +188,46 @@
                       <jvmFlag>-agentlib:jdwp=transport=dt_socket,address=8000,server=y,suspend=n</jvmFlag>
                     </jvmFlags -->
                 </configuration>
+            </plugin>
+
+
+            <!-- scala Compiler -->
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.0</version>
+                <configuration>
+                    <skip>true</skip>
+                    <skipMain>true</skipMain>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.carrotgarden.maven</groupId>
+                <artifactId>scalor-maven-plugin_2.12</artifactId>
+                <version>1.4.2.20180508161326</version>
+                <configuration>
+                    <zincOptionsScala>
+                        -target:jvm-1.8
+                        -deprecation
+                        -feature
+                        -unchecked
+                        -language:implicitConversions
+                        -language:postfixOps
+                    </zincOptionsScala>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>eclipse-config</goal>
+                            <goal>eclipse-format</goal>
+                            <goal>eclipse-restart</goal>
+                            <goal>eclipse-prescomp</goal>
+                            <!-- <goal>register-main</goal> --> <!-- uncomment if you have some Scala code to compile in src/main/scala -->
+                            <goal>register-test</goal>
+                            <!-- <goal>compile-main</goal> -->  <!-- uncomment if you have some Scala code to compile in src/main/scala -->
+                            <goal>compile-test</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
