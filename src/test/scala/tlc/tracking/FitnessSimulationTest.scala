@@ -15,7 +15,7 @@ class FitnessSimulationTest extends Simulation {
     .pause(5)
 
   setUp(
-    scn.inject(atOnceUsers(1))
+    scn.inject(atOnceUsers(10)) // LAUNCH 10 request
   ).protocols(httpConf)
 }
 
