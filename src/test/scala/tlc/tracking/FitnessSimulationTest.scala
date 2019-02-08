@@ -12,7 +12,9 @@ class FitnessSimulationTest extends Simulation {
     .exec(http("add")
       .post("/api/run")
       .body(StringBody("[{\"id\":9,\"lat\":48.8601,\"lon\":2.3507,\"user\":\"lea\",\"timestamp\":1543775727}]")))
-    .pause(5)
+    .exec(http("delete")
+      .delete("/api/run/9")
+      .body(StringBody("list=9")))
 
   setUp(
     scn.inject(atOnceUsers(10)) // LAUNCH 10 request
