@@ -22,22 +22,42 @@ public class RunResource extends ServerResource {
 
     @Get("json")
     public RecordList search() {
-        // Read and print URL parameters
+        String user = null;
+        Long id = null;
+        Double lon = null;
+        Double lat = null;
+        Long timestampMin = null;
+        Long timestampMax = null;
+
+
+        // Read URL parameters
         Form form = getRequest().getResourceRef().getQueryAsForm();
         for (Parameter parameter : form) {
-            System.out.print("parameter " + parameter.getName());
-            System.out.println(" -> " + parameter.getValue());
+            switch (parameter.getName()) {
+                case "user":
+                    user = parameter.getValue();
+                    break;
+                case "loc":
+                    String location = parameter.getValue();
+                    if (location != null) {
+                        lon = Double.valueOf(location.split(",")[0]);
+                        lat = Double.valueOf(location.split(",")[1]);
+                    }
+                    break;
+                case "timestamp":
+                    String timestamp = parameter.getValue();
+                    if (timestamp != null) {
+                        timestampMin = Long.valueOf(timestamp.split(",")[0]);
+                        timestampMax = Long.valueOf(timestamp.split(",")[1]);
+                    }
+                    break;
+                case "id":
+                    id = Long.valueOf(parameter.getValue());
+                    break;
+            }
         }
 
-        // Build a dummy result
-        RecordList res = new RecordList();
-        //        res.add(new Record(5, 43.8, 12.6, "lea", 154789));
-        //        res.add(new Record(5, 43.8, 12.6, "john", 154789));
-
-        //@FIXME You must query Google Datastore to retrieve the records instead of sending dummy results
-        //@FIXME Don't forget to apply potential filters got from the URL parameters
-
-        return res;
+        return service.find(user, id, lon, lat, timestampMin, timestampMax);
     }
 
     @Delete("json")
