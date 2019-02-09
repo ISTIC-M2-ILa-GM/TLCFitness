@@ -10,6 +10,7 @@ import tlc.tracking.impl.GoogleDataStoreService;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class RunResource extends ServerResource {
 
@@ -63,13 +64,10 @@ public class RunResource extends ServerResource {
     @Delete("json")
     public void bulkDelete() {
         final String[] run_ids = getRequest().getAttributes().get("list").toString().split(",");
-
-        Arrays.stream(run_ids)
-                .map(Long::valueOf)
-                .map(this.service::findById)
-                .flatMap(Collection::stream)
-                .map(Record::getId)
-                .forEach(this.service::delete);
+        for (String id: run_ids) {
+            List<Record> records = this.service.findById(Long.valueOf(id));
+            records.forEach(r -> this.service.delete(r.getId()));
+        }
 
     }
 

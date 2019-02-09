@@ -93,10 +93,15 @@ public class GoogleDataStoreService implements StoreService {
 
     @Override
     public void delete(long id) {
-        // Recréer la clé
-        final Key key = longToKey(id);
-        // Supprime l'enregistrement
-        DATA_STORE.delete(key);
+        final EntityQuery query = newEntityQueryBuilder()
+                .setKind("Record")
+                .setFilter(PropertyFilter.eq("id", id))
+                .build();
+
+        final QueryResults<Entity> results = DATA_STORE.run(query);
+        while (results.hasNext()) {
+            DATA_STORE.delete(results.next().getKey());
+        }
     }
 
     @Override
