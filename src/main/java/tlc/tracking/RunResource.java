@@ -24,8 +24,8 @@ public class RunResource extends ServerResource {
     public RecordList search() {
         String user = null;
         Long id = null;
-        Long lon = null;
-        Long lat = null;
+        Double lon = null;
+        Double lat = null;
         Long timestampMin = null;
         Long timestampMax = null;
 
@@ -40,8 +40,8 @@ public class RunResource extends ServerResource {
                 case "loc":
                     String location = parameter.getValue();
                     if (location != null) {
-                        lon = Long.valueOf(location.split(",")[0]);
-                        lat = Long.valueOf(location.split(",")[1]);
+                        lon = Double.valueOf(location.split(",")[0]);
+                        lat = Double.valueOf(location.split(",")[1]);
                     }
                     break;
                 case "timestamp":
@@ -57,14 +57,7 @@ public class RunResource extends ServerResource {
             }
         }
 
-        service.find(user, id, lon, lat, timestampMin, timestampMax);
-
-        // Build a dummy result
-        RecordList res = new RecordList();
-        //        res.add(new Record(5, 43.8, 12.6, "lea", 154789));
-        //        res.add(new Record(5, 43.8, 12.6, "john", 154789));
-
-        return res;
+        return service.find(user, id, lon, lat, timestampMin, timestampMax);
     }
 
     @Delete("json")

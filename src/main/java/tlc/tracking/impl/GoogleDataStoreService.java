@@ -1,21 +1,13 @@
 package tlc.tracking.impl;
 
-import com.google.appengine.api.datastore.DatastoreService;
-import com.google.appengine.api.datastore.DatastoreServiceFactory;
-import com.google.appengine.api.datastore.FetchOptions;
-import com.google.appengine.api.datastore.Query;
-import com.google.appengine.api.datastore.Query.Filter;
-import com.google.appengine.api.datastore.Query.FilterPredicate;
-import com.google.appengine.api.datastore.Query.FilterOperator;
-import com.google.appengine.api.datastore.Query.CompositeFilter;
 import com.google.cloud.datastore.Datastore;
 import com.google.cloud.datastore.DatastoreOptions;
 import com.google.cloud.datastore.Entity;
 import com.google.cloud.datastore.EntityQuery;
 import com.google.cloud.datastore.Key;
 import com.google.cloud.datastore.KeyFactory;
+import com.google.cloud.datastore.Query;
 import com.google.cloud.datastore.QueryResults;
-import com.google.cloud.datastore.StructuredQuery;
 import tlc.tracking.Record;
 import tlc.tracking.RecordList;
 import tlc.tracking.RecordMapper;
@@ -25,13 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.cloud.datastore.Query.newEntityQueryBuilder;
+import static com.google.cloud.datastore.StructuredQuery.Filter;
+import static com.google.cloud.datastore.StructuredQuery.PropertyFilter;
+import static com.google.cloud.datastore.StructuredQuery.CompositeFilter;
 import static tlc.tracking.RecordMapper.toEntity;
 
 public class GoogleDataStoreService implements StoreService {
 
     private static final Datastore DATA_STORE = DatastoreOptions.getDefaultInstance().getService();
-    private static final DatastoreService DATASTORE_SERVICE = DatastoreServiceFactory.getDatastoreService();
-    private static final KeyFactory RECORDS_KEY = DATA_STORE.newKeyFactory().setKind("content");
+    private static final KeyFactory RECORDS_KEY = DATA_STORE.newKeyFactory().setKind("Record");
 
     @Override
     public RecordList insert(RecordList recordList) {
@@ -44,46 +38,53 @@ public class GoogleDataStoreService implements StoreService {
     }
 
     @Override
-    public List<Record> find(String user, Long id, Long lon, Long lat, Long timestampMin, Long timestampMax) {
+    public RecordList find(String user, Long id, Double lon, Double lat, Long timestampMin, Long timestampMax) {
         List<Filter> filters = new ArrayList<>();
-        List<Record> records = new ArrayList<>();
+        RecordList records = new RecordList();
 
         if (user != null) {
-            Filter userFilter = new FilterPredicate("user", FilterOperator.EQUAL, user);
+            Filter userFilter = PropertyFilter.eq("user", user);
             filters.add(userFilter);
         }
         if (id != null) {
-            Filter idFilter = new FilterPredicate("id", FilterOperator.EQUAL, id);
+            PropertyFilter idFilter = PropertyFilter.eq("id", id);
             filters.add(idFilter);
         }
         if (lon != null) {
-            Filter lonFilter = new FilterPredicate("lon", FilterOperator.EQUAL, lon);
+            PropertyFilter lonFilter = PropertyFilter.eq("lon", lon);
             filters.add(lonFilter);
         }
         if (lat != null) {
-            Filter latFilter = new FilterPredicate("lat", FilterOperator.EQUAL, lat);
+            PropertyFilter latFilter = PropertyFilter.eq("lat", lat);
             filters.add(latFilter);
         }
         if (timestampMin != null && timestampMax != null) {
-            Filter minTimeFilter = new FilterPredicate("timestamp", FilterOperator.GREATER_THAN, timestampMin);
-            Filter maxTimeFilter = new FilterPredicate("timestamp", FilterOperator.LESS_THAN, timestampMax);
+            PropertyFilter minTimeFilter = PropertyFilter.ge("timestamp", timestampMin);
+            PropertyFilter maxTimeFilter = PropertyFilter.le("timestamp", timestampMax);
             filters.add(minTimeFilter);
             filters.add(maxTimeFilter);
         }
 
         Filter mainFilter = null;
-        if (filters.size() > 1) {
-            mainFilter = new CompositeFilter(Query.CompositeFilterOperator.AND, filters);
-        }
-        else if (filters.size() == 1){
-            mainFilter = filters.get(0);
+        for (Filter f : filters) {
+            if (mainFilter == null) {
+                mainFilter = f;
+            }
+            else {
+                mainFilter = CompositeFilter.and(mainFilter, f);
+            }
         }
 
-        Query query = new Query("Record").setFilter(mainFilter);
-        List<com.google.appengine.api.datastore.Entity> results = DATASTORE_SERVICE.prepare(query).asList(FetchOptions.Builder.withDefaults());
+        Query query = Query
+                .newEntityQueryBuilder()
+                .setKind("Record")
+                .setFilter(mainFilter)
+                .build();
 
-        for (com.google.appengine.api.datastore.Entity res : results) {
-            records.add(RecordMapper.entityToRecord(res));
+        QueryResults<Entity> results = DATA_STORE.run(query);
+
+        while (results.hasNext()) {
+            records.add(RecordMapper.toRecord(results.next()));
         }
 
         return records;
@@ -101,7 +102,7 @@ public class GoogleDataStoreService implements StoreService {
     public List<Record> findById(final long id) {
         final EntityQuery query = newEntityQueryBuilder()
                 .setKind("Record")
-                .setFilter(StructuredQuery.PropertyFilter.eq("id", id))
+                .setFilter(PropertyFilter.eq("id", id))
                 .build();
 
         final QueryResults<Entity> results = DATA_STORE.run(query);
