@@ -5,19 +5,20 @@ import io.gatling.http.Predef._
 
 class FitnessSimulationTest extends Simulation {
 
-  val httpConf = http.baseUrl("http://127.0.0.1:8080")
-    .userAgentHeader("Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0")
+  val httpConf = http.baseUrl("https://idyllic-root-224415.appspot.com")
 
   val scn = scenario("FitnessSimulation")
     .exec(http("add")
       .post("/api/run")
       .body(StringBody("[{\"id\":9,\"lat\":48.8601,\"lon\":2.3507,\"user\":\"lea\",\"timestamp\":1543775727}]")))
+    .exec(http("find")
+      .get("/api/run?user=lea&timestamp=1543775726,1543775729"))
     .exec(http("delete")
       .delete("/api/run/9")
       .body(StringBody("list=9")))
 
   setUp(
-    scn.inject(atOnceUsers(10)) // LAUNCH 10 request
+    scn.inject(atOnceUsers(1))
   ).protocols(httpConf)
 }
 
