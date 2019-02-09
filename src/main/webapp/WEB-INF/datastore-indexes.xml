@@ -8,4 +8,8 @@
         <property name="lon" direction="asc" />
         <property name="timestamp" direction="asc" />
     </datastore-index>
+    <datastore-index kind="Record" ancestor="false">
+        <property name="id" direction="asc" />
+        <property name="timestamp" direction="asc" />
+    </datastore-index>
 </datastore-indexes>
